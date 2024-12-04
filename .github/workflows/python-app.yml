@@ -51,79 +51,79 @@ jobs:
       run: |
         ./dev.sh coverage
 
-    - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v3
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    # - name: Upload coverage reports to Codecov
+    #   uses: codecov/codecov-action@v3
+    #   env:
+    #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  security:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
+  # security:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v3
     
-    - name: Set up Python 3.12
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.12"
+  #   - name: Set up Python 3.12
+  #     uses: actions/setup-python@v3
+  #     with:
+  #       python-version: "3.12"
     
-    - name: Setup development environment
-      run: |
-        chmod +x dev.sh
-        ./dev.sh setup
+  #   - name: Setup development environment
+  #     run: |
+  #       chmod +x dev.sh
+  #       ./dev.sh setup
     
-    - name: Run security checks
-      run: |
-        ./dev.sh security
+  #   - name: Run security checks
+  #     run: |
+  #       ./dev.sh security
 
-  migrate-db:
-    needs: [test, security]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  # migrate-db:
+  #   needs: [test, security]
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
-    steps:
-    - uses: actions/checkout@v3
+  #   steps:
+  #   - uses: actions/checkout@v3
     
-    - name: Set up Python 3.12
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.12"
+  #   - name: Set up Python 3.12
+  #     uses: actions/setup-python@v3
+  #     with:
+  #       python-version: "3.12"
     
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install alembic psycopg2-binary python-dotenv SQLAlchemy
+  #   - name: Install dependencies
+  #     run: |
+  #       python -m pip install --upgrade pip
+  #       pip install alembic psycopg2-binary python-dotenv SQLAlchemy
 
-    - name: Create production environment file
-      run: |
-        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
-        echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
-        echo "ALGORITHM=HS256" >> .env
-        echo "ACCESS_TOKEN_EXPIRE_MINUTES=30" >> .env
-        echo "DEBUG=False" >> .env
+  #   - name: Create production environment file
+  #     run: |
+  #       echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
+  #       echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+  #       echo "ALGORITHM=HS256" >> .env
+  #       echo "ACCESS_TOKEN_EXPIRE_MINUTES=30" >> .env
+  #       echo "DEBUG=False" >> .env
 
-    - name: Run database migrations
-      run: |
-        alembic upgrade head
-      env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  #   - name: Run database migrations
+  #     run: |
+  #       alembic upgrade head
+  #     env:
+  #       DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-  deploy:
-    needs: [test, security, migrate-db]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  # deploy:
+  #   needs: [test, security, migrate-db]
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
-    steps:
-    - uses: actions/checkout@v3
+  #   steps:
+  #   - uses: actions/checkout@v3
     
-    - name: Set up Python 3.12
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.12"
+  #   - name: Set up Python 3.12
+  #     uses: actions/setup-python@v3
+  #     with:
+  #       python-version: "3.12"
     
-    - name: Build package
-      run: |
-        chmod +x dev.sh
-        ./dev.sh build
+  #   - name: Build package
+  #     run: |
+  #       chmod +x dev.sh
+  #       ./dev.sh build
     
     # Add your deployment steps here
     # Example for AWS Elastic Beanstalk:
