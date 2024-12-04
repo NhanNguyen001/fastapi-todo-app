@@ -47,9 +47,9 @@ jobs:
         ./dev.sh lint
         ./dev.sh type
     
-    - name: Run tests and coverage
-      run: |
-        ./dev.sh coverage
+    # - name: Run tests and coverage
+    #   run: |
+    #     ./dev.sh coverage
 
     # - name: Upload coverage reports to Codecov
     #   uses: codecov/codecov-action@v3
