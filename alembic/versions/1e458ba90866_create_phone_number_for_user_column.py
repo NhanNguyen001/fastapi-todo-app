@@ -5,6 +5,7 @@ Revises:
 Create Date: 2024-11-23 16:38:25.803953
 
 """
+
 from typing import Sequence, Union
 
 from alembic import op
@@ -23,10 +24,10 @@ def upgrade() -> None:
     # Create an inspector to check if column exists
     conn = op.get_bind()
     inspector = Inspector.from_engine(conn)
-    columns = [col['name'] for col in inspector.get_columns('users')]
-    
+    columns = [col["name"] for col in inspector.get_columns("users")]
+
     # Only add the column if it doesn't exist
-    if 'phone_number' not in columns:
+    if "phone_number" not in columns:
         op.add_column("users", sa.Column("phone_number", sa.String(), nullable=True))
 
 

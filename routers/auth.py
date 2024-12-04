@@ -66,7 +66,9 @@ def create_access_token(
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
         username: str = payload.get("sub")
         user_id: int = payload.get("id")
         user_role: str = payload.get("role")
@@ -111,10 +113,10 @@ async def login_for_access_token(
             detail="Could not validate user.",
         )
     token = create_access_token(
-        user.username, 
-        user.id, 
-        user.role, 
-        timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        user.username,
+        user.id,
+        user.role,
+        timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
     )
 
     return {"access_token": token, "token_type": "bearer"}
