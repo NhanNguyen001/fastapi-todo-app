@@ -22,7 +22,7 @@ A modern, fast (high-performance) web API for managing todos, built with FastAPI
 
 - Python 3.12+
 - PostgreSQL 14+
-- Poetry (optional)
+- pip 23.0+ (for dependency management)
 
 ## Installation
 
@@ -43,7 +43,11 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 3. Install dependencies:
 
 ```bash
-pip install -r requirements.txt
+# Install build dependencies
+pip install --upgrade pip build
+
+# Install project in editable mode with all dependencies
+pip install -e ".[dev]"
 ```
 
 ## Configuration
@@ -76,73 +80,59 @@ DEBUG=False
 
 ## Development
 
-1. Install development dependencies:
+All development commands are available through `dev.sh`:
 
 ```bash
-pip install -r requirements-dev.txt
-```
+# Show available commands
+./dev.sh
 
-2. Run development server:
-
-```bash
-./run.sh dev
-```
-
-3. Format code:
-
-```bash
+# Format code
 ./dev.sh format
-```
 
-4. Run linting:
-
-```bash
+# Run linting
 ./dev.sh lint
-```
 
-5. Run type checking:
-
-```bash
+# Run type checking
 ./dev.sh type
-```
 
-6. Run security checks:
-
-```bash
+# Run security checks
 ./dev.sh security
+
+# Run development server
+./run.sh dev
 ```
 
 ## Database Migrations
 
-- Initialize migrations:
+Migration commands are available through `migrate.sh`:
 
 ```bash
+# Show available commands
+./migrate.sh
+
+# Initialize migrations
 ./migrate.sh init
-```
 
-- Create a new migration:
-
-```bash
+# Create a new migration
 ./migrate.sh create "migration message"
-```
 
-- Apply migrations:
-
-```bash
+# Apply migrations
 ./migrate.sh up
-```
 
-- Rollback migrations:
-
-```bash
+# Rollback migrations
 ./migrate.sh down
 ```
 
 ## Production Deployment
 
 1. Set up environment variables
-2. Run database migrations
-3. Start the production server:
+2. Install production dependencies:
+
+```bash
+pip install ".[prod]"
+```
+3. Run database migrations
+4. Start the production server:
 
 ```bash
 ./run.sh prod
@@ -178,27 +168,41 @@ Once the application is running, you can access:
 
 ## Dependencies
 
+The project uses `pyproject.toml` for dependency management. Here are the key dependencies:
+
 ### Main Dependencies
-- FastAPI==0.109.2
-- SQLAlchemy==2.0.25
-- Alembic==1.13.1
-- Pydantic==2.5.3
-- python-jose==3.3.0
-- passlib==1.7.4
-- psycopg2-binary==2.9.9
-- python-multipart==0.0.6
-- python-dotenv==1.0.0
-- uvicorn==0.27.0.post1
-- gunicorn==21.2.0
+
+```toml
+[project]
+dependencies = [
+    "fastapi~=0.109.2",
+    "sqlalchemy~=2.0.25",
+    "alembic~=1.13.1",
+    "pydantic~=2.5.3",
+    "python-jose~=3.3.0",
+    "passlib~=1.7.4",
+    "psycopg2-binary~=2.9.9",
+    "python-multipart~=0.0.6",
+    "python-dotenv~=1.0.0",
+    "uvicorn~=0.27.0",
+    "gunicorn~=21.2.0",
+]
+```
 
 ### Development Dependencies
-- black==24.1.1
-- flake8==7.0.0
-- mypy==1.8.0
-- pytest==8.0.0
-- pytest-cov==4.1.0
-- bandit==1.7.6
-- httpx==0.26.0
+
+```toml
+[project.optional-dependencies]
+dev = [
+    "black~=24.1.1",
+    "flake8~=7.0.0",
+    "mypy~=1.8.0",
+    "pytest~=8.0.0",
+    "pytest-cov~=4.1.0",
+    "bandit~=1.7.6",
+    "httpx~=0.26.0",
+]
+```
 
 ## License
 
