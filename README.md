@@ -22,7 +22,7 @@ A modern, fast (high-performance) web API for managing todos, built with FastAPI
 
 - Python 3.12+
 - PostgreSQL 14+
-- pip 23.0+ (for dependency management)
+- Poetry 1.7+ (for dependency management)
 
 ## Installation
 
@@ -33,21 +33,29 @@ git clone https://github.com/yourusername/fastapi-todo-app.git
 cd fastapi-todo-app
 ```
 
-2. Create a virtual environment:
+2. Install Poetry if you haven't already:
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+curl -sSL https://install.python-poetry.org | python3 -
 ```
 
 3. Install dependencies:
 
 ```bash
-# Install build dependencies
-pip install --upgrade pip build
+# Configure Poetry to create the virtual environment in the project directory
+poetry config virtualenvs.in-project true
 
-# Install project in editable mode with all dependencies
-pip install -e ".[dev]"
+# Install all dependencies (including development)
+poetry install
+
+# Or install only production dependencies
+poetry install --only main
+```
+
+4. Activate the virtual environment:
+
+```bash
+poetry shell
 ```
 
 ## Configuration
@@ -129,8 +137,9 @@ Migration commands are available through `migrate.sh`:
 2. Install production dependencies:
 
 ```bash
-pip install ".[prod]"
+poetry install --only main
 ```
+
 3. Run database migrations
 4. Start the production server:
 
@@ -168,40 +177,38 @@ Once the application is running, you can access:
 
 ## Dependencies
 
-The project uses `pyproject.toml` for dependency management. Here are the key dependencies:
+The project uses Poetry for dependency management. Here are the key dependencies:
 
 ### Main Dependencies
 
 ```toml
-[project]
-dependencies = [
-    "fastapi~=0.109.2",
-    "sqlalchemy~=2.0.25",
-    "alembic~=1.13.1",
-    "pydantic~=2.5.3",
-    "python-jose~=3.3.0",
-    "passlib~=1.7.4",
-    "psycopg2-binary~=2.9.9",
-    "python-multipart~=0.0.6",
-    "python-dotenv~=1.0.0",
-    "uvicorn~=0.27.0",
-    "gunicorn~=21.2.0",
-]
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.109.2"
+uvicorn = "^0.27.0"
+gunicorn = "^21.2.0"
+python-jose = "^3.3.0"
+passlib = "^1.7.4"
+bcrypt = "^4.0.1"
+python-multipart = "^0.0.17"
+SQLAlchemy = "^2.0.36"
+alembic = "^1.14.0"
+psycopg2-binary = "^2.9.10"
+python-dotenv = "^1.0.1"
+pydantic = "^2.9.2"
+pydantic-settings = "^2.0.0"
 ```
 
 ### Development Dependencies
 
 ```toml
-[project.optional-dependencies]
-dev = [
-    "black~=24.1.1",
-    "flake8~=7.0.0",
-    "mypy~=1.8.0",
-    "pytest~=8.0.0",
-    "pytest-cov~=4.1.0",
-    "bandit~=1.7.6",
-    "httpx~=0.26.0",
-]
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+pytest-cov = "^4.1.0"
+black = "^24.10.0"
+flake8 = "^7.0.0"
+mypy = "^1.9.0"
+httpx = "^0.27.2"
 ```
 
 ## License
