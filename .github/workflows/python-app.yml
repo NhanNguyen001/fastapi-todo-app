@@ -51,7 +51,7 @@ jobs:
         echo "ACCESS_TOKEN_EXPIRE_MINUTES=30" >> .env
         echo "DEBUG=True" >> .env
     
-    - name: Run database migrations
+    - name: Run database migrations for test
       run: |
         alembic upgrade head
 
@@ -89,8 +89,40 @@ jobs:
       run: |
         ./dev.sh security
 
-  deploy:
+  migrate-db:
     needs: [test, security]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.12"
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install alembic psycopg2-binary python-dotenv SQLAlchemy
+
+    - name: Create production environment file
+      run: |
+        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
+        echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+        echo "ALGORITHM=HS256" >> .env
+        echo "ACCESS_TOKEN_EXPIRE_MINUTES=30" >> .env
+        echo "DEBUG=False" >> .env
+
+    - name: Run database migrations
+      run: |
+        alembic upgrade head
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+  deploy:
+    needs: [test, security, migrate-db]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
