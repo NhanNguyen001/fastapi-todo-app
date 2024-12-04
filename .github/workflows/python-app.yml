@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Python FastAPI CI
+name: Python FastAPI CI/CD Pipeline
 
 on:
   push:
@@ -14,22 +14,24 @@ permissions:
 
 jobs:
   test:
+    name: Test and Lint
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
     
-    - name: Set up Python 3.12
+    - name: Configure Python environment
       uses: actions/setup-python@v3
       with:
         python-version: "3.12"
     
-    - name: Setup development environment
+    - name: Install dependencies
       run: |
         chmod +x dev.sh
         ./dev.sh setup
 
-    - name: Create test environment file
+    - name: Configure environment variables
       run: |
         echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
         echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
@@ -37,63 +39,67 @@ jobs:
         echo "ACCESS_TOKEN_EXPIRE_MINUTES=30" >> .env
         echo "DEBUG=False" >> .env
     
-    - name: Run database migrations for test
+    - name: Apply database migrations
       run: |
         alembic upgrade head
 
-    - name: Check code quality
+    - name: Validate code quality
       run: |
         ./dev.sh format
         ./dev.sh lint
         ./dev.sh type
     
-    # - name: Run tests and coverage
+    # - name: Execute test suite
     #   run: |
     #     ./dev.sh coverage
 
-    # - name: Upload coverage reports to Codecov
+    # - name: Upload coverage report
     #   uses: codecov/codecov-action@v3
     #   env:
     #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   # security:
+  #   name: Security Scan
   #   runs-on: ubuntu-latest
   #   steps:
-  #   - uses: actions/checkout@v3
+  #   - name: Checkout repository
+  #     uses: actions/checkout@v3
     
-  #   - name: Set up Python 3.12
-  #     uses: actions/setup-python@v3
-  #     with:
-  #       python-version: "3.12"
-    
-  #   - name: Setup development environment
-  #     run: |
-  #       chmod +x dev.sh
-  #       ./dev.sh setup
-    
-  #   - name: Run security checks
-  #     run: |
-  #       ./dev.sh security
-
-  # migrate-db:
-  #   needs: [test, security]
-  #   runs-on: ubuntu-latest
-  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
-  #   steps:
-  #   - uses: actions/checkout@v3
-    
-  #   - name: Set up Python 3.12
+  #   - name: Configure Python environment
   #     uses: actions/setup-python@v3
   #     with:
   #       python-version: "3.12"
     
   #   - name: Install dependencies
   #     run: |
+  #       chmod +x dev.sh
+  #       ./dev.sh setup
+    
+  #   - name: Run security analysis
+  #     run: |
+  #       ./dev.sh security
+
+  # migrate-db:
+  #   name: Database Migration
+  #   needs: [test, security]
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+  #   steps:
+  #   - name: Checkout repository
+  #     uses: actions/checkout@v3
+    
+  #   - name: Configure Python environment
+  #     uses: actions/setup-python@v3
+  #     with:
+  #       python-version: "3.12"
+    
+  #   - name: Install database dependencies
+  #     run: |
   #       python -m pip install --upgrade pip
   #       pip install alembic psycopg2-binary python-dotenv SQLAlchemy
 
-  #   - name: Create production environment file
+  #   - name: Configure production environment
   #     run: |
   #       echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
   #       echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
@@ -101,26 +107,28 @@ jobs:
   #       echo "ACCESS_TOKEN_EXPIRE_MINUTES=30" >> .env
   #       echo "DEBUG=False" >> .env
 
-  #   - name: Run database migrations
+  #   - name: Execute database migrations
   #     run: |
   #       alembic upgrade head
   #     env:
   #       DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
   # deploy:
+  #   name: Production Deployment
   #   needs: [test, security, migrate-db]
   #   runs-on: ubuntu-latest
   #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
   #   steps:
-  #   - uses: actions/checkout@v3
+  #   - name: Checkout repository
+  #     uses: actions/checkout@v3
     
-  #   - name: Set up Python 3.12
+  #   - name: Configure Python environment
   #     uses: actions/setup-python@v3
   #     with:
   #       python-version: "3.12"
     
-  #   - name: Build package
+  #   - name: Build application package
   #     run: |
   #       chmod +x dev.sh
   #       ./dev.sh build
