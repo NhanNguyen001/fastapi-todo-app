@@ -1,17 +1,132 @@
-[tool.bandit]
-exclude_dirs = ["tests", "venv", ".git", "__pycache__"]
-skips = ["B101"]  # Skip assert statements
+[project]
+name = "fastapi-todo-app"
+version = "1.0.0"
+description = "A robust RESTful API built with FastAPI for managing todos with user authentication and authorization"
+authors = [
+    { name = "Your Name", email = "your.email@example.com" }
+]
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Framework :: FastAPI",
+]
+
+dependencies = [
+    "fastapi>=0.115.5",
+    "uvicorn>=0.32.0",
+    "gunicorn>=21.2.0",
+    "python-jose>=3.3.0",
+    "passlib>=1.7.4",
+    "bcrypt>=4.0.1",
+    "python-multipart>=0.0.17",
+    "SQLAlchemy>=2.0.36",
+    "alembic>=1.14.0",
+    "psycopg2-binary>=2.9.10",
+    "python-dotenv>=1.0.1",
+    "pydantic>=2.9.2",
+    "pydantic-settings>=2.0.0",
+    "starlette>=0.41.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.3",
+    "pytest-cov>=4.1.0",
+    "black>=24.10.0",
+    "flake8>=7.0.0",
+    "mypy>=1.9.0",
+    "httpx>=0.27.2",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/yourusername/fastapi-todo-app"
+"Bug Tracker" = "https://github.com/yourusername/fastapi-todo-app/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.black]
 line-length = 88
 target-version = ['py38']
 include = '\.pyi?$'
+extend-exclude = '''
+# A regex preceded with ^/ will apply only to files and directories
+# in the root of the project.
+^/docs
+'''
+
+[tool.ruff]
+# Enable pycodestyle ('E'), pyflakes ('F'), and isort ('I') codes
+select = ["E", "F", "I"]
+ignore = ["E501"]  # Line length is handled by black
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["A", "B", "C", "D", "E", "F", "I"]
+unfixable = []
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+# Same as Black.
+line-length = 88
+
+[tool.ruff.isort]
+known-first-party = ["app"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-addopts = "-v --cov=./ --cov-report=term-missing"
+addopts = "-v --cov=./ --cov-report=term-missing --cov-report=xml"
 pythonpath = "."
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+]
+
+[tool.coverage.run]
+source = ["."]
+omit = [
+    "tests/*",
+    "venv/*",
+    "setup.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "pass",
+    "raise ImportError",
+]
 
 [tool.mypy]
 python_version = "3.8"
@@ -19,7 +134,29 @@ warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
 check_untyped_defs = true
+show_error_codes = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
 
 [[tool.mypy.overrides]]
-module = ["sqlalchemy.*", "passlib.*", "jose.*"]
-ignore_missing_imports = true 
+module = ["sqlalchemy.*", "passlib.*", "jose.*", "pytest.*"]
+ignore_missing_imports = true
+
+[tool.bandit]
+exclude_dirs = ["tests", "venv", ".git", "__pycache__"]
+skips = ["B101"]  # Skip assert statements
+targets = ["app"]
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+line_length = 88 

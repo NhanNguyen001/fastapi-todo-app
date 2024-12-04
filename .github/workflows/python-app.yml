@@ -38,12 +38,10 @@ jobs:
       with:
         python-version: "3.12"
     
-    - name: Install dependencies
+    - name: Setup development environment
       run: |
-        python -m pip install --upgrade pip
-        pip install flake8 pytest black mypy
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+        chmod +x dev.sh
+        ./dev.sh setup
 
     - name: Create test environment file
       run: |
@@ -57,24 +55,15 @@ jobs:
       run: |
         alembic upgrade head
 
-    - name: Check formatting with Black
+    - name: Check code quality
       run: |
-        black . --check
+        ./dev.sh format
+        ./dev.sh lint
+        ./dev.sh type
     
-    - name: Lint with flake8
+    - name: Run tests and coverage
       run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    
-    - name: Type checking with mypy
-      run: |
-        mypy . --ignore-missing-imports
-    
-    - name: Run tests with pytest
-      run: |
-        pytest -v --cov=./ --cov-report=xml
+        ./dev.sh coverage
 
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
@@ -91,18 +80,14 @@ jobs:
       with:
         python-version: "3.12"
     
-    - name: Install security testing dependencies
+    - name: Setup development environment
       run: |
-        python -m pip install --upgrade pip
-        pip install bandit safety
+        chmod +x dev.sh
+        ./dev.sh setup
     
-    - name: Run security checks with Bandit
+    - name: Run security checks
       run: |
-        bandit -r . -c pyproject.toml
-
-    - name: Check dependencies for known vulnerabilities
-      run: |
-        safety check
+        ./dev.sh security
 
   deploy:
     needs: [test, security]
@@ -117,10 +102,10 @@ jobs:
       with:
         python-version: "3.12"
     
-    - name: Install dependencies
+    - name: Build package
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        chmod +x dev.sh
+        ./dev.sh build
     
     # Add your deployment steps here
     # Example for AWS Elastic Beanstalk:
