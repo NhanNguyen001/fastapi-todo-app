@@ -1,150 +1,106 @@
 # FastAPI Todo Application
 
-A modern, fast (high-performance) web API for managing todos, built with FastAPI and PostgreSQL.
+A robust RESTful API built with FastAPI for managing todos with user authentication, authorization, and background tasks using Celery.
 
 ## Features
 
-- ✨ Modern Python 3.12 with type hints
-- 🚀 FastAPI for high performance
 - 🔐 JWT Authentication
-- 🗃️ PostgreSQL database
-- 📝 SQLAlchemy ORM
-- 🔄 Alembic migrations
-- 🧪 Pytest for testing
-- 📊 Code coverage reporting
-- 🎨 Black code formatting
-- 🔍 Flake8 linting
-- ⚡ MyPy type checking
-- 🔒 Security checks with Bandit
-- 🚦 GitHub Actions CI/CD pipeline
+- 👥 User Management
+- ✅ Todo CRUD Operations
+- 🔄 Background Tasks with Celery
+- 📊 PostgreSQL Database
+- 🚀 Docker Support
+- ✨ Modern Python (3.12+)
 
-## Requirements
+## Tech Stack
+
+- FastAPI (^0.115.6)
+- PostgreSQL
+- Redis
+- Celery (^5.4.0)
+- SQLAlchemy (^2.0.36)
+- Pydantic (^2.10.3)
+- Poetry for dependency management
+
+## Prerequisites
 
 - Python 3.12+
-- PostgreSQL 14+
-- Poetry 1.7+ (for dependency management)
+- Poetry
+- Docker and Docker Compose (optional)
+- PostgreSQL (if running locally)
+- Redis (if running locally)
 
 ## Installation
 
-1. Clone the repository:
+### Using Poetry (Local Development)
 
-```bash
-git clone https://github.com/yourusername/fastapi-todo-app.git
-cd fastapi-todo-app
-```
-
-2. Install Poetry if you haven't already:
+1. Install Poetry:
 
 ```bash
 curl -sSL https://install.python-poetry.org | python3 -
 ```
 
+2. Clone the repository:
+
+```bash
+git clone <repository-url>
+cd fastapi-todo-app
+```
+
 3. Install dependencies:
 
 ```bash
-# Configure Poetry to create the virtual environment in the project directory
-poetry config virtualenvs.in-project true
-
-# Install all dependencies (including development)
 poetry install
-
-# Or install only production dependencies
-poetry install --only main
 ```
 
-4. Activate the virtual environment:
-
-```bash
-poetry shell
-```
-
-## Configuration
-
-1. Create a `.env` file based on `.env.example`:
+4. Create a `.env` file:
 
 ```bash
 cp .env.example .env
+# Edit .env with your configuration
 ```
 
-2. Update the environment variables:
-
-```env
-DATABASE_URL=postgresql://user:password@localhost:5432/fastapi_todo
-SECRET_KEY=your-super-secret-key-here
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-DEBUG=False
-```
-
-## Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| DATABASE_URL | PostgreSQL connection URL | postgresql://user:password@localhost:5432/fastapi_todo |
-| SECRET_KEY | JWT secret key | your-super-secret-key-here |
-| ALGORITHM | JWT algorithm | HS256 |
-| ACCESS_TOKEN_EXPIRE_MINUTES | Token expiration time | 30 |
-| DEBUG | Debug mode | False |
-
-## Development
-
-All development commands are available through `dev.sh`:
+5. Run migrations:
 
 ```bash
-# Show available commands
-./dev.sh
-
-# Format code
-./dev.sh format
-
-# Run linting
-./dev.sh lint
-
-# Run type checking
-./dev.sh type
-
-# Run security checks
-./dev.sh security
-
-# Run development server
-./run.sh dev
+poetry run alembic upgrade head
 ```
 
-## Database Migrations
+### Using Docker
 
-Migration commands are available through `migrate.sh`:
+1. Clone the repository:
 
 ```bash
-# Show available commands
-./migrate.sh
-
-# Initialize migrations
-./migrate.sh init
-
-# Create a new migration
-./migrate.sh create "migration message"
-
-# Apply migrations
-./migrate.sh up
-
-# Rollback migrations
-./migrate.sh down
+git clone <repository-url>
+cd fastapi-todo-app
 ```
 
-## Production Deployment
-
-1. Set up environment variables
-2. Install production dependencies:
+2. Build and run with Docker Compose:
 
 ```bash
-poetry install --only main
+docker-compose up --build
 ```
 
-3. Run database migrations
-4. Start the production server:
+## Running the Application
+
+### Local Development
+
+1. Start the FastAPI application:
 
 ```bash
-./run.sh prod
+poetry run uvicorn app.main:app --reload
+```
+
+2. Start Celery worker:
+
+```bash
+poetry run celery -A app.worker.celery worker --loglevel=info
+```
+
+### Docker Environment
+
+```bash
+docker-compose up
 ```
 
 ## API Documentation
@@ -156,61 +112,68 @@ Once the application is running, you can access:
 ## API Endpoints
 
 ### Authentication
-- `POST /auth/` - Register new user
-- `POST /auth/token` - Login and get access token
-
-### Users
-- `GET /user/` - Get current user
-- `PUT /user/password` - Change password
-- `PUT /user/phonenumber/{phone_number}` - Update phone number
+- POST `/api/auth/register` - Register new user
+- POST `/api/auth/login` - Login user
+- POST `/api/auth/refresh` - Refresh access token
 
 ### Todos
-- `GET /` - List all todos
-- `GET /todo/{todo_id}` - Get specific todo
-- `POST /todo` - Create new todo
-- `PUT /todo/{todo_id}` - Update todo
-- `DELETE /todo/{todo_id}` - Delete todo
+- GET `/api/todos` - List all todos
+- POST `/api/todos` - Create new todo
+- GET `/api/todos/{todo_id}` - Get specific todo
+- PUT `/api/todos/{todo_id}` - Update todo
+- DELETE `/api/todos/{todo_id}` - Delete todo
 
-### Admin
-- `GET /admin/todo` - List all todos (admin only)
-- `DELETE /admin/todo/{todo_id}` - Delete any todo (admin only)
+## Development Tools
 
-## Dependencies
+This project uses several development tools:
 
-The project uses Poetry for dependency management. Here are the key dependencies:
+- **Black** (^24.10.0) - Code formatting
+- **Flake8** (^7.0.0) - Linting
+- **MyPy** (^1.9.0) - Static type checking
+- **Pytest** (^8.3.3) - Testing
+- **Ruff** - Fast Python linter
 
-### Main Dependencies
+### Running Tests
 
-```toml
-[tool.poetry.dependencies]
-python = "^3.12"
-fastapi = "^0.109.2"
-uvicorn = "^0.27.0"
-gunicorn = "^21.2.0"
-python-jose = "^3.3.0"
-passlib = "^1.7.4"
-bcrypt = "^4.0.1"
-python-multipart = "^0.0.17"
-SQLAlchemy = "^2.0.36"
-alembic = "^1.14.0"
-psycopg2-binary = "^2.9.10"
-python-dotenv = "^1.0.1"
-pydantic = "^2.9.2"
-pydantic-settings = "^2.0.0"
+```bash
+poetry run pytest
 ```
 
-### Development Dependencies
+### Code Formatting
 
-```toml
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.3.3"
-pytest-cov = "^4.1.0"
-black = "^24.10.0"
-flake8 = "^7.0.0"
-mypy = "^1.9.0"
-httpx = "^0.27.2"
+```bash
+poetry run black .
+poetry run flake8
+poetry run mypy .
 ```
+
+## Environment Variables
+
+Create a `.env` file with the following variables:
+
+```env
+DATABASE_URL=postgresql://postgres:postgres@db:5432/todos
+REDIS_URL=redis://redis:6379/0
+SECRET_KEY=your-secret-key-here
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+```
+
+## Docker Services
+
+- **web**: FastAPI application
+- **db**: PostgreSQL database
+- **redis**: Redis for Celery
+- **celery_worker**: Celery worker for background tasks
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
