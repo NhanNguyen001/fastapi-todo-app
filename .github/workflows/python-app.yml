@@ -45,11 +45,11 @@ jobs:
 
     - name: Create test environment file
       run: |
-        echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test_db" > .env
-        echo "SECRET_KEY=test_secret_key" >> .env
+        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
+        echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
         echo "ALGORITHM=HS256" >> .env
         echo "ACCESS_TOKEN_EXPIRE_MINUTES=30" >> .env
-        echo "DEBUG=True" >> .env
+        echo "DEBUG=False" >> .env
     
     - name: Run database migrations for test
       run: |
