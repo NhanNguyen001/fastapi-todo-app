@@ -1,45 +1,39 @@
 # FastAPI Todo Application
 
-A robust RESTful API built with FastAPI for managing todos with user authentication and authorization.
+A modern, fast (high-performance) web API for managing todos, built with FastAPI and PostgreSQL.
 
 ## Features
 
+- ✨ Modern Python 3.12 with type hints
+- 🚀 FastAPI for high performance
 - 🔐 JWT Authentication
-- 👥 User Management
-- ✅ Todo CRUD Operations
-- 🔑 Role-based Access Control
-- 📝 Database Migrations with Alembic
-- 🐳 Production-ready with Gunicorn
-- 🔄 Environment-based Configuration
+- 🗃️ PostgreSQL database
+- 📝 SQLAlchemy ORM
+- 🔄 Alembic migrations
+- 🧪 Pytest for testing
+- 📊 Code coverage reporting
+- 🎨 Black code formatting
+- 🔍 Flake8 linting
+- ⚡ MyPy type checking
+- 🔒 Security checks with Bandit
+- 🚦 GitHub Actions CI/CD pipeline
 
-## Tech Stack
+## Requirements
 
-- FastAPI
-- PostgreSQL
-- SQLAlchemy
-- Alembic
-- Pydantic
-- Python-Jose (JWT)
-- Passlib
-- Gunicorn
-- Uvicorn
-
-## Prerequisites
-
-- Python 3.8+
-- PostgreSQL
-- Virtual Environment (recommended)
+- Python 3.12+
+- PostgreSQL 14+
+- Poetry (optional)
 
 ## Installation
 
 1. Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/yourusername/fastapi-todo-app.git
 cd fastapi-todo-app
 ```
 
-2. Create and activate virtual environment:
+2. Create a virtual environment:
 
 ```bash
 python -m venv venv
@@ -49,41 +43,76 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 3. Install dependencies:
 
 ```bash
-# For production
 pip install -r requirements.txt
-
-# For development
-pip install -r requirements-dev.txt
 ```
 
-4. Set up environment variables:
+## Configuration
+
+1. Create a `.env` file based on `.env.example`:
 
 ```bash
 cp .env.example .env
-# Edit .env with your configuration
 ```
 
-5. Initialize the database:
+2. Update the environment variables:
+
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/fastapi_todo
+SECRET_KEY=your-super-secret-key-here
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+DEBUG=False
+```
+
+## Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| DATABASE_URL | PostgreSQL connection URL | postgresql://user:password@localhost:5432/fastapi_todo |
+| SECRET_KEY | JWT secret key | your-super-secret-key-here |
+| ALGORITHM | JWT algorithm | HS256 |
+| ACCESS_TOKEN_EXPIRE_MINUTES | Token expiration time | 30 |
+| DEBUG | Debug mode | False |
+
+## Development
+
+1. Install development dependencies:
 
 ```bash
-./migrate.sh up
+pip install -r requirements-dev.txt
 ```
 
-## Running the Application
-
-### Development
+2. Run development server:
 
 ```bash
 ./run.sh dev
 ```
 
-### Production
+3. Format code:
 
 ```bash
-./run.sh prod
+./dev.sh format
 ```
 
-### Database Migrations
+4. Run linting:
+
+```bash
+./dev.sh lint
+```
+
+5. Run type checking:
+
+```bash
+./dev.sh type
+```
+
+6. Run security checks:
+
+```bash
+./dev.sh security
+```
+
+## Database Migrations
 
 - Initialize migrations:
 
@@ -107,6 +136,16 @@ cp .env.example .env
 
 ```bash
 ./migrate.sh down
+```
+
+## Production Deployment
+
+1. Set up environment variables
+2. Run database migrations
+3. Start the production server:
+
+```bash
+./run.sh prod
 ```
 
 ## API Documentation
@@ -137,77 +176,30 @@ Once the application is running, you can access:
 - `GET /admin/todo` - List all todos (admin only)
 - `DELETE /admin/todo/{todo_id}` - Delete any todo (admin only)
 
-## Environment Variables
+## Dependencies
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| DATABASE_URL | PostgreSQL connection URL | postgresql://user:password@localhost:5432/fastapi_todo |
-| SECRET_KEY | JWT secret key | your-super-secret-key-here |
-| ALGORITHM | JWT algorithm | HS256 |
-| ACCESS_TOKEN_EXPIRE_MINUTES | Token expiration time | 30 |
-| DEBUG | Debug mode | False |
-| ALLOWED_ORIGINS | CORS allowed origins | http://localhost:3000,http://localhost:8000 |
+### Main Dependencies
+- FastAPI==0.109.2
+- SQLAlchemy==2.0.25
+- Alembic==1.13.1
+- Pydantic==2.5.3
+- python-jose==3.3.0
+- passlib==1.7.4
+- psycopg2-binary==2.9.9
+- python-multipart==0.0.6
+- python-dotenv==1.0.0
+- uvicorn==0.27.0.post1
+- gunicorn==21.2.0
 
-## Development
-
-1. Install development dependencies:
-
-```bash
-pip install -r requirements-dev.txt
-```
-
-2. Format code:
-
-```bash
-black .
-```
-
-3. Run linting:
-
-```bash
-flake8 .
-```
-
-4. Run type checking:
-
-```bash
-mypy .
-```
-
-5. Run tests:
-
-```bash
-pytest
-```
-
-## Project Structure
-
-```
-fastapi-todo-app/
-├── alembic/              # Database migrations
-├── routers/              # API route handlers
-│   ├── auth.py          # Authentication routes
-│   ├── todos.py         # Todo routes
-│   ├── users.py         # User routes
-│   └── admin.py         # Admin routes
-├── tests/               # Test files
-├── config.py            # Configuration management
-├── database.py          # Database setup
-├── models.py            # SQLAlchemy models
-├── requirements.txt     # Production dependencies
-├── requirements-dev.txt # Development dependencies
-├── run.sh              # Server run script
-└── migrate.sh          # Migration management script
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+### Development Dependencies
+- black==24.1.1
+- flake8==7.0.0
+- mypy==1.8.0
+- pytest==8.0.0
+- pytest-cov==4.1.0
+- bandit==1.7.6
+- httpx==0.26.0
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
