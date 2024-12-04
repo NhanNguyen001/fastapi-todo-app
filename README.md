@@ -1,6 +1,6 @@
 # FastAPI Todo Application
 
-A robust RESTful API built with FastAPI for managing todos with user authentication, authorization, and background tasks using Celery.
+A robust RESTful API built with FastAPI for managing todos with user authentication, authorization, and comprehensive monitoring.
 
 ## Features
 
@@ -10,6 +10,11 @@ A robust RESTful API built with FastAPI for managing todos with user authenticat
 - 🔄 Background Tasks with Celery
 - 📊 PostgreSQL Database
 - 🚀 Docker Support
+- 📈 Comprehensive Monitoring
+  - Prometheus metrics
+  - Grafana dashboards
+  - Loki logging
+  - Tempo tracing
 - ✨ Modern Python (3.12+)
 
 ## Tech Stack
@@ -21,12 +26,17 @@ A robust RESTful API built with FastAPI for managing todos with user authenticat
 - SQLAlchemy (^2.0.36)
 - Pydantic (^2.10.3)
 - Poetry for dependency management
+- Monitoring Stack:
+  - Prometheus
+  - Grafana
+  - Loki
+  - Tempo
 
 ## Prerequisites
 
 - Python 3.12+
 - Poetry
-- Docker and Docker Compose (optional)
+- Docker and Docker Compose
 - PostgreSQL (if running locally)
 - Redis (if running locally)
 
@@ -68,17 +78,29 @@ poetry run alembic upgrade head
 
 ### Using Docker
 
-1. Clone the repository:
+1. Install the Loki Docker driver:
+
+```bash
+docker plugin install grafana/loki-docker-driver:main --alias loki --grant-all-permissions
+```
+
+2. Clone the repository:
 
 ```bash
 git clone <repository-url>
 cd fastapi-todo-app
 ```
 
-2. Build and run with Docker Compose:
+3. Create necessary directories:
 
 ```bash
-docker-compose up --build
+mkdir -p loki/chunks loki/rules
+```
+
+4. Build and run with Docker Compose:
+
+```bash
+docker compose up --build
 ```
 
 ## Running the Application
@@ -100,14 +122,49 @@ poetry run celery -A app.worker.celery worker --loglevel=info
 ### Docker Environment
 
 ```bash
-docker-compose up
+docker compose up
 ```
 
-## API Documentation
+## Monitoring and Observability
 
-Once the application is running, you can access:
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
+### Available Endpoints
+
+- FastAPI Application: http://localhost:8000
+  - Swagger UI: http://localhost:8000/docs
+  - ReDoc: http://localhost:8000/redoc
+  - Metrics: http://localhost:8000/metrics
+
+- Monitoring Stack:
+  - Grafana: http://localhost:3000 (admin/admin)
+  - Prometheus: http://localhost:9090
+  - Tempo: http://localhost:3200
+  - Loki: http://localhost:3100
+
+### Monitoring Features
+
+1. **Metrics (Prometheus)**
+   - Request rates
+   - Response times
+   - Error rates
+   - Custom business metrics
+
+2. **Logging (Loki)**
+   - Centralized logging
+   - Structured log aggregation
+   - Log correlation with traces
+   - Real-time log viewing
+
+3. **Tracing (Tempo)**
+   - Distributed tracing
+   - Request flow visualization
+   - Performance bottleneck identification
+   - Service dependencies
+
+4. **Dashboards (Grafana)**
+   - Pre-configured dashboards
+   - Real-time monitoring
+   - Custom visualization
+   - Alerts configuration
 
 ## API Endpoints
 
@@ -159,13 +216,6 @@ ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 ```
 
-## Docker Services
-
-- **web**: FastAPI application
-- **db**: PostgreSQL database
-- **redis**: Redis for Celery
-- **celery_worker**: Celery worker for background tasks
-
 ## Contributing
 
 1. Fork the repository
@@ -177,90 +227,3 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Docker Setup
-
-### Prerequisites
-
-- Docker Engine 24.0+
-- Docker Compose V2
-
-### Docker Configuration
-
-The application uses Docker Compose to manage multiple services:
-
-1. `web`: FastAPI application container
-   - Exposes port 8000
-   - Handles API requests
-   - Auto-reloads during development
-
-2. `db`: PostgreSQL database
-   - Exposes port 5432
-   - Persists data in a Docker volume
-   - Configured with environment variables
-
-3. `redis`: Redis server
-   - Exposes port 6379
-   - Used as message broker for Celery
-   - Handles caching
-
-4. `celery_worker`: Celery worker
-   - Processes background tasks
-   - Connects to Redis broker
-   - Runs in worker mode
-
-### Docker Commands
-
-Start all services:
-
-```bash
-docker compose up
-```
-
-Start services in detached mode:
-
-```bash
-docker compose up -d
-```
-
-Build and start services:
-
-```bash
-docker compose up --build
-```
-
-Stop all services:
-
-```bash
-docker compose down
-```
-
-View logs:
-
-```bash
-docker compose logs
-```
-
-View logs for specific service:
-
-```bash
-docker compose logs [service_name]
-```
-
-### Docker Volumes
-
-The application uses Docker volumes for data persistence:
-
-- `postgres_data`: Stores PostgreSQL data
-- `redis_data`: Stores Redis data
-
-### Environment Variables
-
-When using Docker, the environment variables in `.env` file should use the service names as hostnames:
-
-```env
-DATABASE_URL=postgresql://username:password@db:5432/database_name
-REDIS_URL=redis://redis:6379/0
-```
-
-Note: Replace `username`, `password`, and `database_name` with your actual credentials.
