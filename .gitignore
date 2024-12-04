@@ -71,3 +71,5 @@ celerybeat-schedule
 *.pem
 *.key
 *.crt 
+
+run-docker-test.sh
