@@ -38,7 +38,10 @@ def test_create_access_token():
     token = create_access_token(username, user_id, role, expires_delta)
 
     decoded_token = jwt.decode(
-        token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM], options={"verify_signature": False}
+        token,
+        settings.SECRET_KEY,
+        algorithms=[settings.ALGORITHM],
+        options={"verify_signature": False},
     )
     assert decoded_token["sub"] == username
     assert decoded_token["id"] == user_id
