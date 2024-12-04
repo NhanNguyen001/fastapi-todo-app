@@ -177,3 +177,90 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Docker Setup
+
+### Prerequisites
+
+- Docker Engine 24.0+
+- Docker Compose V2
+
+### Docker Configuration
+
+The application uses Docker Compose to manage multiple services:
+
+1. `web`: FastAPI application container
+   - Exposes port 8000
+   - Handles API requests
+   - Auto-reloads during development
+
+2. `db`: PostgreSQL database
+   - Exposes port 5432
+   - Persists data in a Docker volume
+   - Configured with environment variables
+
+3. `redis`: Redis server
+   - Exposes port 6379
+   - Used as message broker for Celery
+   - Handles caching
+
+4. `celery_worker`: Celery worker
+   - Processes background tasks
+   - Connects to Redis broker
+   - Runs in worker mode
+
+### Docker Commands
+
+Start all services:
+
+```bash
+docker compose up
+```
+
+Start services in detached mode:
+
+```bash
+docker compose up -d
+```
+
+Build and start services:
+
+```bash
+docker compose up --build
+```
+
+Stop all services:
+
+```bash
+docker compose down
+```
+
+View logs:
+
+```bash
+docker compose logs
+```
+
+View logs for specific service:
+
+```bash
+docker compose logs [service_name]
+```
+
+### Docker Volumes
+
+The application uses Docker volumes for data persistence:
+
+- `postgres_data`: Stores PostgreSQL data
+- `redis_data`: Stores Redis data
+
+### Environment Variables
+
+When using Docker, the environment variables in `.env` file should use the service names as hostnames:
+
+```env
+DATABASE_URL=postgresql://username:password@db:5432/database_name
+REDIS_URL=redis://redis:6379/0
+```
+
+Note: Replace `username`, `password`, and `database_name` with your actual credentials.
