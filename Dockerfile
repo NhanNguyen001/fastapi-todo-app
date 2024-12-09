@@ -69,7 +69,7 @@ RUN useradd -m -u 1000 appuser && \
 USER appuser
 
 # Expose port
-EXPOSE 8000
+EXPOSE 8001
 
 # Set healthcheck
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
